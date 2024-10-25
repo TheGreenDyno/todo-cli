@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs')
 const yargs = require('yargs')
 const filePath = './task.json'
@@ -41,7 +42,7 @@ function listTask(){
 
 function taskComplete(index){
     const tasks = loadTask()
-    if(index=>0 && index<= tasks.length){
+    if(index >= 0 && index < tasks.length){
         tasks[index].completed = true
         saveTask(tasks)
         console.log(`task ${index} completed`)
@@ -52,7 +53,7 @@ function taskComplete(index){
 
 function taskDelete(index){
     const tasks = loadTask()
-    if(index=>0 && index<= tasks.length){
+    if(index >= 0 && index < tasks.length){
         tasks.splice(index,1)
         saveTask(tasks)
         console.log(`deleted index: ${index}`)
@@ -61,18 +62,56 @@ function taskDelete(index){
 
 // Parse command-line arguments
 yargs
-
-.command('add <task>','add a new task',{},(argv)=>{
-    addTask(argv.task)
+.option('add',{
+    type: 'string',
+    describe: 'add a new task',
+    alias: 'a',
+   
 })
-.command('list','list all the tasks',{},()=>{
-    listTask()
+.option('list',{
+    describe: 'list all the tasks',
+    alias: 'l',
+   
 })
-.command('complete <index>','mark complete',{},(argv)=>{
-    taskComplete(argv.index)
+.option('complete',{
+    type: 'number',
+    describe: 'mark completed tasks',
+    alias: 'c',
+   
 })
-.command('delete <index>','delete the mentioned index',{},(argv)=>{
-    taskDelete(argv.index)
+.option('delete',{
+    type: 'number',
+    describe: 'delete the task by its index number',
+    alias: 'd',
+   
 })
+// .command('add <task>','add a new task',{},(argv)=>{
+//     addTask(argv.task)
+// })
+// .command('list','list all the tasks',{},()=>{
+//     listTask()
+// })
+// .command('complete <index>','mark complete',{},(argv)=>{
+//     taskComplete(argv.index)
+// })
+// .command('delete <index>','delete the mentioned index',{},(argv)=>{
+//     taskDelete(argv.index)
+// })
 .help()
-.argv
+.argv   
+
+if(yargs.argv.add){
+    addTask(yargs.argv.add)
+}
+else if(yargs.argv.list){
+    listTask()
+}
+else if(yargs.argv.complete !== undefined){
+    taskComplete(yargs.argv.complete)
+}
+else if(yargs.argv.delete !== undefined){
+    taskDelete(yargs.argv.delete)
+}
+else{
+    console.log('option not found')
+}
