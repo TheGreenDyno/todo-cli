@@ -1,4 +1,5 @@
 const fs = require('fs')
+const yargs = require('yargs')
 const filePath = './task.json'
 
 function loadTask(){
@@ -33,7 +34,7 @@ function listTask(){
     const rawData=fs.readFileSync(filePath,'utf-8')
     const datas= JSON.parse(rawData)
     datas.forEach((data)=>{
-        console.log(`Task:${data.task} Completed: ${data.completed?'Done':'False'}`)
+        console.log(`Task:${data.task} | Completed: ${data.completed?'Done':'False'}`)
     })
 
 }
@@ -59,17 +60,19 @@ function taskDelete(index){
 }
 
 // Parse command-line arguments
-const command = process.argv[2];
-const arg = process.argv[3];
+yargs
 
-if (command === 'add') {
-    addTask(arg);
-} else if (command === 'list') {
-    listTask();
-} else if (command === 'complete') {
-    taskComplete(parseInt(arg));
-} else if (command === 'delete') {
-    taskDelete(parseInt(arg));
-} else {
-    console.log('Usage: node todo.js [add|list|complete|delete] [task|index]');
-}
+.command('add <task>','add a new task',{},(argv)=>{
+    addTask(argv.task)
+})
+.command('list','list all the tasks',{},()=>{
+    listTask()
+})
+.command('complete <index>','mark complete',{},(argv)=>{
+    taskComplete(argv.index)
+})
+.command('delete <index>','delete the mentioned index',{},(argv)=>{
+    taskDelete(argv.index)
+})
+.help()
+.argv
